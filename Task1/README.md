@@ -1,4 +1,4 @@
-# C4. Image Classification
+# C3. Image Classification
 
 ## Folder structure 
 The code and data is structured as follows:
@@ -43,12 +43,12 @@ To replicate the submitted results and ensure that everything works as expected,
 ## Tasks
 The main goal of this project is to develop an image classification system with handcrafted techniques. We conducted several tasks to optimize the classification system, such as.
 
-- Exploring different keypoint detectors: SIFT, Dense SIFT and AKAZE (with several values for the amount of features - SIFT and Dense SIFT,  and different values of step size - Dense SIFT.)
-- Applying of a norm or scaler for the featurews.
+- Exploring different keypoint detectors: SIFT, Dense SIFT and AKAZE (with different values of step size for the Dense SIFT).
+- Applying of a norm or scaler for the features.
 - Experimenting with different amounts of codebook sizes.
 - Testing several classifiers and otimizing their hyperparameters: k-nn (number of neighbours and metric), SVM (Kernel, degree of the polynomial and C value) and Logistic Regression (penalty and C value).
 - Incorporating dimensionality reduction - PCA.
-- Implementing cross-validation.
+- Implementing cross-validation to validate the different combinations and methods.
 - Using spatial pyramids to extract the features of the images.
 - Employing Fisher vectors to define the codebook.
 
