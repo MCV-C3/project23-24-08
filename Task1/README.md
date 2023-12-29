@@ -1,4 +1,4 @@
-# C4. Image Classification
+# C3. Image Classification
 
 ## Folder structure 
 The code and data is structured as follows:
