@@ -5,6 +5,7 @@ The code and data is structured as follows:
 
         .
         ├── BagofVisualWords.ipynb          # Source code
+        ├── Explainability.ipynb            # Explainability of the results
         └── MIT_split                       # Datasets
             ├── test                        # Test sets
             │   ├── coast
