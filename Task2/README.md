@@ -28,14 +28,21 @@ To replicate the submitted results and ensure that everything works as expected,
 The main goal of this week's project is to develop an image classification system, and to compare the performance of using handcrafted techniques (DenseSIFT) with simple learning tecnhiques (MLP). We conducted several tasks to optimize and test the classification system (while also explaining all results found), such as:
 
 1. MLP as a classifier
+
     1.1 Add/change layers in the network topology
+   
     1.2 Given an image, get the output of a given layer and apply SVM on it.
+   
     1.3 Given an image, get the output using the MLP as classifier.
+   
     1.4 Compare best performance from 1.3 and 1.4
 
-2. MLP as a dense descriptor
+4. MLP as a dense descriptor
+
     2.1 Divide the image into small patches, extract features of each of them with the MLP and use them as features for the BoVW.
+   
     2.2 Divide the image into small patches, extract features of each of them with Dense SIFT and use them as features for the BoVW.
+
     2.3 Compare best performance from 2.1 and 2.2
 
 
