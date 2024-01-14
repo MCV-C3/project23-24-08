@@ -70,6 +70,12 @@ The main goal of this week's project is to develop an image classification syste
 
 This week's results can be summarized in the following table:
 
+| Approach (img type, descriptor, classificator) | ACCURACY | AVERAGE F1 | AVERAGE PRECISION | AVERAGE RECALL |
+| --------------------------------------------- | -------- | ---------- | ------------------ | --------------- |
+| Whole image, MLP, MLP                          | 0.621     | 0.629       | 0.630               | 0.632            |
+| Whole image, MLP, SVM                          | 0.633    | 0.643      | 0.647              | 0.639           |
+| Patches, MLP, BoVW                             | 0.548    | 0.558      | 0.560              | 0.556           |
+| Patches, Dense SIFT, BoVW                      | 0.853    | 0.858      | 0.860              | 0.856           |
 
 
 
