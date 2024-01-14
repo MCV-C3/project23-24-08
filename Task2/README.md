@@ -4,9 +4,10 @@
 The code and data is structured as follows:
 
         .
-        ├── code.ipynb                          # Source code
-        ├── mlp_MIT_8_scene.py                  # Initial provided code
-        └── patch_based_mlp_MIT_8_scene.py      # Datasets
+        ├── code.ipynb                              # Source code (2nd part)
+        ├── end_to_end_image_classification.ipynb   # Source code (1st part)
+        ├── mlp_MIT_8_scene.py                      # Initial provided code
+        └── patch_based_mlp_MIT_8_scene.py          # Initial provided code
 
 
 
