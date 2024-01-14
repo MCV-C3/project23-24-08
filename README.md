@@ -1,5 +1,4 @@
 # Project
-State shortly what you did during each week. Just a table with the main results is enough. Remind to upload a brief presentation (pptx?) at virtual campus. Do not modify the previous weeks code. If you want to reuse it, just copy it on the corespondig week folder.
 
 ## Task1 work
 The main goal of this week is to develop an image classification system with handcrafted techniques. We conducted several tasks to optimize the classification system, such as.
@@ -49,8 +48,35 @@ The best combination of optimized values of the hyperparameters for each combina
 
 
 ## Task2 work
+The main goal of this week's project is to develop an image classification system, and to compare the performance of using handcrafted techniques (DenseSIFT) with simple learning tecnhiques (MLP). We conducted several tasks to optimize and test the classification system (while also explaining all results found), such as:
+
+1. MLP as a classifier
+
+    1.1 Add/change layers in the network topology
+   
+    1.2 Given an image, get the output of a given layer and apply SVM on it.
+   
+    1.3 Given an image, get the output using the MLP as classifier.
+   
+    1.4 Compare best performance from 1.3 and 1.4
+
+4. MLP as a dense descriptor
+
+    2.1 Divide the image into small patches, extract features of each of them with the MLP and use them as features for the BoVW.
+   
+    2.2 Divide the image into small patches, extract features of each of them with Dense SIFT and use them as features for the BoVW.
+
+    2.3 Compare best performance from 2.1 and 2.2
+
+This week's results can be summarized in the following table:
+
+
+
 
 ## Task3 work
 
 ## Task4 work
 
+
+
+(State shortly what you did during each week. Just a table with the main results is enough. Remind to upload a brief presentation (pptx?) at virtual campus. Do not modify the previous weeks code. If you want to reuse it, just copy it on the corespondig week folder.)
