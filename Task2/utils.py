@@ -45,7 +45,7 @@ def build_mlp(in_size, out_size, num_layers, activation, phase='train'):
     # Add layers
     for i in range(num_layers - 1):
         layer_size = int(in_size*in_size*3 + sign * size_step * i)
-        model.add(Dense(units=layer_size, activation=activation))
+        model.add(Dense(units=layer_size, activation=activation, name = 'dense_'+str(i)))
         model.add(Dropout(0.1))
         model.add(LayerNormalization())
 
@@ -102,7 +102,7 @@ def train(block_path, model, save_path, config):
         decay_rate=learning_rate_decay_factor,
         staircase=True)
     
-    callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, min_delta=0.0001, start_from_epoch=15)
+    callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, min_delta=0.0001)
 
     # Compile the model
     model.compile(loss='categorical_crossentropy',
