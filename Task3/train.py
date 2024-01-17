@@ -82,7 +82,7 @@ def train(config):
         staircase=True)
     
     es_cback = EarlyStopping(monitor='val_accuracy', mode='max', patience=7, min_delta=0.0001)
-    checkpoint_cback = ModelCheckpoint(filepath=MODEL_PATH, mode='max', monitor='val_accuracy', save_best_only=True, save_weights_only=False)
+    checkpoint_cback = ModelCheckpoint(filepath=MODEL_PATH, mode='max', monitor='val_accuracy', save_best_only=True, save_weights_only=True)
     cbacks = [es_cback, checkpoint_cback]
 
     if config['optimizer_type'] == 'adam':
@@ -116,7 +116,7 @@ def train(config):
       
 
     # Save the model
-    model.save(MODEL_PATH)
+    # model.save(MODEL_PATH)
 
     # Define the data generator for preprocessing (no augmentation for test data)
     test_data_generator = ImageDataGenerator(preprocessing_function=preprocess_input)
@@ -131,7 +131,8 @@ def train(config):
     )
 
     # Load the trained model
-    model = tf.keras.models.load_model(MODEL_PATH)
+    # model = tf.keras.models.load_model(MODEL_PATH)
+    model.load_weights(MODEL_PATH)
 
     # Evaluate the model on the test data
     loss, acc, auc = model.evaluate(test_dataset)
@@ -152,7 +153,7 @@ if __name__ == '__main__':
         config = {
             'lr': 1e-3,
             'batch_size': 64,
-            'epochs': 5,
+            'epochs': 2,
             'activation': 'relu',
             'optimizer_type': 'adam',
             'momentum': 0.9
