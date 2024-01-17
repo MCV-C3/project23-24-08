@@ -52,7 +52,7 @@ def train(config):
     base_model = EfficientNetB0(weights='imagenet', include_top=False, input_shape=(IMG_WIDTH, IMG_HEIGHT, 3))
 
     # Unfreeze the last N layers
-    N = 30  # Number of layers to unfreeze
+    N = 10  # Number of layers to unfreeze
     for layer in base_model.layers[:-N]:
         layer.trainable = False
     for layer in base_model.layers[-N:]:
