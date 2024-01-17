@@ -8,13 +8,6 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.utils import plot_model
 import wandb
 
-# Define a new preprocessing function
-def preprocess_and_normalize(image):
-    # Apply existing preprocessing if needed
-    image = preprocess_input(image)
-    # Normalize the image
-
-    return image / 255.0
 
 def train(config):
     # Define constants
@@ -24,16 +17,16 @@ def train(config):
 
     # Define the data generator for data augmentation and preprocessing
     train_data_generator = ImageDataGenerator(
-        preprocessing_function=preprocess_and_normalize,
+        preprocessing_function=preprocess_input,
         rotation_range=20,
         width_shift_range=0.2,
         height_shift_range=0.2,
         shear_range=0.2,
         zoom_range=0.2,
         horizontal_flip=True,
-        vertical_flip=False,
         brightness_range=[0.8, 1.2],
-        validation_split=0.2  # Set the validation split
+        vertical_flip=False,
+        validation_split=0.2  # Set the validation split (only for MIT_split dataset)
     )
 
     # Load and preprocess the training and validation datasets
@@ -43,7 +36,7 @@ def train(config):
         batch_size=config['batch_size'],
         class_mode='categorical',
         shuffle=True,
-        subset='training'  # Specify this is training data
+        subset='training'  # Specify this is training data (only for MIT_split dataset)
     )
 
     val_dataset = train_data_generator.flow_from_directory(
@@ -52,14 +45,14 @@ def train(config):
         batch_size=config['batch_size'],
         class_mode='categorical',
         shuffle=True,
-        subset='validation'  # Specify this is validation data
+        subset='validation' # Specify this is validation data (only for MIT_split dataset)
     )
 
     # Load EfficientNetB0 model
     base_model = EfficientNetB0(weights='imagenet', include_top=False, input_shape=(IMG_WIDTH, IMG_HEIGHT, 3))
 
     # Unfreeze the last N layers
-    N = 5  # Number of layers to unfreeze
+    N = 30  # Number of layers to unfreeze
     for layer in base_model.layers[:-N]:
         layer.trainable = False
     for layer in base_model.layers[-N:]:
@@ -88,8 +81,8 @@ def train(config):
         decay_rate=learning_rate_decay_factor,
         staircase=True)
     
-    es_cback = EarlyStopping(monitor='val_accuracy', patience=5, min_delta=0.001)
-    checkpoint_cback = ModelCheckpoint(filepath=MODEL_PATH, mode='max', monitor='val_accuracy', save_best_only=True, save_weights_only=True)
+    es_cback = EarlyStopping(monitor='val_accuracy', mode='max', patience=7, min_delta=0.0001)
+    checkpoint_cback = ModelCheckpoint(filepath=MODEL_PATH, mode='max', monitor='val_accuracy', save_best_only=True, save_weights_only=False)
     cbacks = [es_cback, checkpoint_cback]
 
     if config['optimizer_type'] == 'adam':
@@ -114,16 +107,16 @@ def train(config):
 
     for epoch in range(len(history.history['loss'])):
         wandb.log({
-            'epoch': epoch,
             'train_loss': history.history['loss'][epoch],
             'train_accuracy': history.history['accuracy'][epoch],
             'val_loss': history.history['val_loss'][epoch],
             'val_accuracy': history.history['val_accuracy'][epoch]
             # Add other metrics if needed
         })
+      
 
-    #Save the model
-    # model.save(MODEL_PATH)
+    # Save the model
+    model.save(MODEL_PATH)
 
     # Define the data generator for preprocessing (no augmentation for test data)
     test_data_generator = ImageDataGenerator(preprocessing_function=preprocess_input)
@@ -141,10 +134,11 @@ def train(config):
     model = tf.keras.models.load_model(MODEL_PATH)
 
     # Evaluate the model on the test data
-    loss, accuracy = model.evaluate(test_dataset)
+    loss, acc, auc = model.evaluate(test_dataset)
 
     print(f"Test Loss: {loss}")
-    print(f"Test Accuracy: {accuracy}")
+    print(f"Test Accuracy: {acc}")
+    print(f"Test AUC: {auc}")
 
 
 if __name__ == '__main__':
@@ -158,7 +152,7 @@ if __name__ == '__main__':
         config = {
             'lr': 1e-3,
             'batch_size': 64,
-            'epochs': 3,
+            'epochs': 5,
             'activation': 'relu',
             'optimizer_type': 'adam',
             'momentum': 0.9
