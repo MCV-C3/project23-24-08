@@ -173,7 +173,7 @@ def train():
 
 sweep = True
 if sweep:
-    sweep_id = "c3-mcv/cnn/0yk44dh5"
+    sweep_id = "c3-mcv/cnn/08xgxjmv"
     wandb.agent(sweep_id, train, count=2)
 else:
     config = {

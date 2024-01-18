@@ -17,6 +17,8 @@ parameters:
     values: [0.1, 0.2, 0.3]  # Dropout rates
   num_layers:
     values: [0, 1, 2, 3]  # Number of layers
+  n_layers_unfreeze:
+    values: [5, 15, 25, 35]
   use_batch_norm:
     values: [True, False]  # Use batch normalization or not
   l2:
