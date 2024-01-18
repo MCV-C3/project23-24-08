@@ -43,7 +43,7 @@ def train():
     config = wandb.config
 
     # Define constants
-    IMG_WIDTH, IMG_HEIGHT = 256, 256
+    IMG_WIDTH, IMG_HEIGHT = config['resolution'], config['resolution']
     MODEL_PATH = './pretrained/model.h5'
     DATASET_DIR = './MIT_split'
 
@@ -132,9 +132,9 @@ def train():
     cbacks = [es_cback]#, checkpoint_cback]
 
     if config['optimizer_type'] == 'adam':
-        optimizer = Adam(learning_rate=lr_schedule)
+        optimizer = Adam(learning_rate=lr_schedule, weight_decay=config['l2'])
     elif config['optimizer_type'] == 'sgd':
-        optimizer = SGD(learning_rate=lr_schedule, momentum=config['momentum'])
+        optimizer = SGD(learning_rate=lr_schedule, momentum=config['momentum'], weight_decay=config['l2'])
 
     auc = tf.keras.metrics.AUC(num_thresholds=200, name='PR-AUC', curve='PR')
 
@@ -171,9 +171,9 @@ def train():
     wandb.finish()
 
 
-sweep = False
+sweep = True
 if sweep:
-    sweep_id = "c3-mcv/cnn/gh7vzq5j"
+    sweep_id = "c3-mcv/cnn/0yk44dh5"
     wandb.agent(sweep_id, train, count=2)
 else:
     config = {
@@ -186,7 +186,10 @@ else:
         'n_layers_unfreeze': 10,
         'num_layers': 1,
         'dropout': 0.1,
-        'use_batch_norm': True
+        'use_batch_norm': True,
+        'l2': 0.001,
+        'resolution': 224
+
     }
 
     # Initialize wandb with a sample configuration

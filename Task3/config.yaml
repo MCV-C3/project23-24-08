@@ -1,0 +1,25 @@
+method: bayes  # Search strategy: random, grid, bayes
+metric:
+  name: val_accuracy  # Metric to optimize
+  goal: maximize  # Goal can be minimize or maximize
+parameters:
+  lr:
+    values: [1e-3, 1e-2]  # Learning rate values
+  batch_size:
+    values: [32, 64]  # Batch size values
+  epochs:
+    value: 25  # Number of epochs
+  activation:
+    values: ['relu', 'elu', 'gelu']  # Activation functions
+  optimizer_type:
+    values: ['adam', 'sgd']  # Optimizer types
+  dropout:
+    values: [0.1, 0.2, 0.3]  # Dropout rates
+  num_layers:
+    values: [0, 1, 2, 3]  # Number of layers
+  use_batch_norm:
+    values: [True, False]  # Use batch normalization or not
+  l2:
+    values: [0.0001, 0.001, 0.01, 0.1]  # L2 regularization values
+  resolution:
+    values: [64, 128, 224, 256]  # Image resolution values
