@@ -1,19 +1,51 @@
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications.efficientnet import EfficientNetB0, preprocess_input
-from tensorflow.keras.layers import GlobalAveragePooling2D, Dense
+from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout, BatchNormalization
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.utils import plot_model
 import wandb
 
+def add_custom_layers(x, num_layers, activation, dropout, use_batch_norm):
+    """
+    Adds customizable layers to the base model output.
 
-def train(config):
+    :param x: Output tensor from the base model.
+    :param num_layers: Number of layers to add.
+    :param activation: Activation functions for all layer.
+    :param dropout: Wether to use the dropout regularization.
+    :param use_batch_norm: Wether to use batch normalization.
+    :return: Output tensor after adding the custom layers.
+    """
+    if num_layers == 1:
+        neurons = [512]
+    elif num_layers == 2:
+        neurons = [512, 256]
+    elif num_layers == 3:
+        neurons = [512, 256, 128]
+    
+    for i in range(num_layers):
+        x = Dense(neurons[i], activation=activation)(x)
+        if use_batch_norm:
+            x = BatchNormalization()(x)
+        if dropout > 0:
+            x = Dropout(dropout)(x)
+    
+    return x
+
+
+def train():
+
+    wandb.init()
+    # Get hyperparameters
+    config = wandb.config
+
     # Define constants
     IMG_WIDTH, IMG_HEIGHT = 256, 256
-    DATASET_DIR = './MIT_split'
     MODEL_PATH = './pretrained/model.h5'
+    DATASET_DIR = './MIT_split'
 
     # Define the data generator for data augmentation and preprocessing
     train_data_generator = ImageDataGenerator(
@@ -48,11 +80,23 @@ def train(config):
         subset='validation' # Specify this is validation data (only for MIT_split dataset)
     )
 
+    # Define the data generator for preprocessing (no augmentation for test data)
+    test_data_generator = ImageDataGenerator(preprocessing_function=preprocess_input)
+
+    # Load and preprocess the test dataset
+    test_dataset = test_data_generator.flow_from_directory(
+        directory=DATASET_DIR + '/test/',
+        target_size=(IMG_WIDTH, IMG_HEIGHT),
+        batch_size=config['batch_size'],
+        class_mode='categorical',
+        shuffle=False  # No need to shuffle the test data
+    )
+    
     # Load EfficientNetB0 model
     base_model = EfficientNetB0(weights='imagenet', include_top=False, input_shape=(IMG_WIDTH, IMG_HEIGHT, 3))
 
     # Unfreeze the last N layers
-    N = 10  # Number of layers to unfreeze
+    N = config['n_layers_unfreeze']  # Number of layers to unfreeze
     for layer in base_model.layers[:-N]:
         layer.trainable = False
     for layer in base_model.layers[-N:]:
@@ -62,6 +106,8 @@ def train(config):
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
     x = Dense(1024, activation=config['activation'])(x)
+    if config['num_layers'] > 0:
+        x = add_custom_layers(x, config['num_layers'], config['activation'], config['dropout'], config['use_batch_norm'])
     predictions = Dense(8, activation='softmax')(x)  # Assuming 8 classes
 
     model = Model(inputs=base_model.input, outputs=predictions)
@@ -82,8 +128,8 @@ def train(config):
         staircase=True)
     
     es_cback = EarlyStopping(monitor='val_accuracy', mode='max', patience=7, min_delta=0.0001)
-    checkpoint_cback = ModelCheckpoint(filepath=MODEL_PATH, mode='max', monitor='val_accuracy', save_best_only=True, save_weights_only=True)
-    cbacks = [es_cback, checkpoint_cback]
+    # checkpoint_cback = ModelCheckpoint(filepath=MODEL_PATH, mode='max', monitor='val_accuracy', save_best_only=True, save_weights_only=True)
+    cbacks = [es_cback]#, checkpoint_cback]
 
     if config['optimizer_type'] == 'adam':
         optimizer = Adam(learning_rate=lr_schedule)
@@ -111,56 +157,40 @@ def train(config):
             'train_accuracy': history.history['accuracy'][epoch],
             'val_loss': history.history['val_loss'][epoch],
             'val_accuracy': history.history['val_accuracy'][epoch]
-            # Add other metrics if needed
         })
-      
-
-    # Save the model
-    # model.save(MODEL_PATH)
-
-    # Define the data generator for preprocessing (no augmentation for test data)
-    test_data_generator = ImageDataGenerator(preprocessing_function=preprocess_input)
-
-    # Load and preprocess the test dataset
-    test_dataset = test_data_generator.flow_from_directory(
-        directory=DATASET_DIR + '/test/',
-        target_size=(IMG_WIDTH, IMG_HEIGHT),
-        batch_size=config['batch_size'],
-        class_mode='categorical',
-        shuffle=False  # No need to shuffle the test data
-    )
 
     # Load the trained model
-    # model = tf.keras.models.load_model(MODEL_PATH)
-    model.load_weights(MODEL_PATH)
+    # model.load_weights(MODEL_PATH)
 
     # Evaluate the model on the test data
-    loss, acc, auc = model.evaluate(test_dataset)
+    # loss, acc, auc = model.evaluate(test_dataset)
 
-    print(f"Test Loss: {loss}")
-    print(f"Test Accuracy: {acc}")
-    print(f"Test AUC: {auc}")
+    # print(f"Test Loss: {loss}")
+    # print(f"Test Accuracy: {acc}")
+    # print(f"Test AUC: {auc}")
+    wandb.finish()
 
 
-if __name__ == '__main__':
-    sweep = False
-    if sweep:
-        with wandb.init() as run:
-            # Get hyperparameters
-            config = run.config
-    else:
-        # Define the hyperparameter configuration space
-        config = {
-            'lr': 1e-3,
-            'batch_size': 64,
-            'epochs': 2,
-            'activation': 'relu',
-            'optimizer_type': 'adam',
-            'momentum': 0.9
-        }
+sweep = False
+if sweep:
+    sweep_id = "c3-mcv/cnn/gh7vzq5j"
+    wandb.agent(sweep_id, train, count=2)
+else:
+    config = {
+        'lr': 1e-3,
+        'batch_size': 64,
+        'epochs': 2,
+        'activation': 'relu',
+        'optimizer_type': 'adam',
+        'momentum': 0.9,
+        'n_layers_unfreeze': 10,
+        'num_layers': 1,
+        'dropout': 0.1,
+        'use_batch_norm': True
+    }
 
-        # Initialize wandb with a sample configuration
-        wandb.init(project='cnn', entity='c3-mcv', config=config)
+    # Initialize wandb with a sample configuration
+    wandb.init(project='cnn', entity='c3-mcv', config=config)
 
     # Train the model
-    train(config)
+    train()
