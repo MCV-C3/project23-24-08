@@ -88,7 +88,21 @@ This lab can be divided into two main objectives:
 
 The aim is to compare both tasks to see if there are any performance differences and extract some conclusions from it. Moreover, to understand how the model behaves at a more general level.
 
-The following table summarizes the results:
+The following tables summarize the results:
+|MODEL|ACCURACY|AVERAGE F1|AVERAGE PRECISON|AVERAGE RECALL|
+|:----|:----|:----|:----|:----|
+|Trained with the whole dataset|0.957|0.957|0.956|0.959|
+|Trained with MIT_small_1|0.934|0.935|0.936|0.935|
+
+
+
+The best combination of optimized values of the hyperparameters for each combination are shown in the following table:
+
+|MODEL|ACTIVATION|BATCH SIZE|DROPOUT|EPOCHS|L2 REG.|LEARNING RATE|UNFREEZE LAYERS|N LAYERS|OPTIMIZER|RESOLUTION|BATCH NORM|
+|:----|:----|:----|:----|:----|:----|:----|:----|:----|:----|:----|:----|:----|
+|Trained with the whole dataset|Gelu|64|0.1|50|0.0001|0.01|35|3|Adam|256|True|
+|Trained with MIT_small_1|Gelu|32|0.3|50|0.1|0.01|35|1|1|Adam|256|True|
+
 
 
 
