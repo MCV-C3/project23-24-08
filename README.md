@@ -98,10 +98,11 @@ The following tables summarize the results:
 
 The best combination of optimized values of the hyperparameters for each combination are shown in the following table:
 
-|MODEL|ACTIVATION|BATCH SIZE|DROPOUT|EPOCHS|L2 REG.|LEARNING RATE|UNFREEZE LAYERS|N LAYERS|OPTIMIZER|RESOLUTION|BATCH NORM|
-|:----|:----|:----|:----|:----|:----|:----|:----|:----|:----|:----|:----|:----|
-|Trained with the whole dataset|Gelu|64|0.1|50|0.0001|0.01|35|3|Adam|256|True|
-|Trained with MIT_small_1|Gelu|32|0.3|50|0.1|0.01|35|1|1|Adam|256|True|
+| MODEL                             | ACTIVATION | BATCH SIZE | DROPOUT | EPOCHS | L2 REG. | LEARNING RATE | UNFREEZE LAYERS | N LAYERS | OPTIMIZER | RESOLUTION | BATCH NORM |
+| --------------------------------- | ---------- | ---------- | ------- | ------ | ------- | ------------- | --------------- | -------- | --------- | ---------- | ---------- |
+| Trained with the whole dataset    | Gelu       | 64         | 0.1     | 50     | 0.0001  | 0.01          | 35              | 3        | Adam      | 256        | True       |
+| Trained with MIT_small_1           | Gelu       | 32         | 0.3     | 50     | 0.1     | 0.01          | 35              | 1        | 1         | Adam       | 256        | True       |
+
 
 
 
