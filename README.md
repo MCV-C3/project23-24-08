@@ -80,6 +80,32 @@ This week's results can be summarized in the following table:
 
 
 ## Task3 work
+In this lab, we’ll be fine-tuning the EfficientNetB0 model on a given dataset. This process will adapt the model, originally trained on a more general dataset, to the specific task of recognizing and classifying these diverse outdoor scenes. The goal is to leverage the model's existing knowledge base and enhance its ability to discern features unique to these environmental categories, improving its accuracy in scene classification.
+
+This lab can be divided into two main objectives: 
+1. Compare the performance of the model being fine-tuned using the whole dataset or only a fraction of it.
+2. Modify the model by adding layers at the end or unfreezing layers and retraining them, or both. While also optimizing other hyperparameters.
+
+The aim is to compare both tasks to see if there are any performance differences and extract some conclusions from it. Moreover, to understand how the model behaves at a more general level.
+
+The following tables summarize the results:
+|MODEL|ACCURACY|AVERAGE F1|AVERAGE PRECISON|AVERAGE RECALL|
+|:----|:----|:----|:----|:----|
+|Trained with the whole dataset|0.957|0.957|0.956|0.959|
+|Trained with MIT_small_1|0.934|0.935|0.936|0.935|
+
+
+
+The best combination of optimized values of the hyperparameters for each combination are shown in the following table:
+
+| MODEL                             | ACTIVATION | BATCH SIZE | DROPOUT | EPOCHS | L2 REG. | LEARNING RATE | UNFREEZE LAYERS | N LAYERS | OPTIMIZER | RESOLUTION | BATCH NORM |
+| --------------------------------- | ---------- | ---------- | ------- | ------ | ------- | ------------- | --------------- | -------- | --------- | ---------- | ---------- |
+| Trained with the whole dataset    | Gelu       | 64         | 0.1     | 50     | 0.0001  | 0.01          | 35              | 3        | Adam      | 256        | True       |
+| Trained with MIT_small_1           | Gelu       | 32         | 0.3     | 50     | 0.1     | 0.01          | 35              | 1        | 1         | Adam       | 256        | True       |
+
+
+
+
 
 ## Task4 work
 
