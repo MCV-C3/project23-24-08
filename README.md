@@ -80,6 +80,17 @@ This week's results can be summarized in the following table:
 
 
 ## Task3 work
+In this lab, we’ll be fine-tuning the EfficientNetB0 model on a given dataset. This process will adapt the model, originally trained on a more general dataset, to the specific task of recognizing and classifying these diverse outdoor scenes. The goal is to leverage the model's existing knowledge base and enhance its ability to discern features unique to these environmental categories, improving its accuracy in scene classification.
+
+This lab can be divided into two main objectives: 
+1. Compare the performance of the model being fine-tuned using the whole dataset or only a fraction of it.
+2. Modify the model by adding layers at the end or unfreezing layers and retraining them, or both. While also optimizing other hyperparameters.
+
+The aim is to compare both tasks to see if there are any performance differences and extract some conclusions from it. Moreover, to understand how the model behaves at a more general level.
+
+The following table summarizes the results:
+
+
 
 ## Task4 work
 
