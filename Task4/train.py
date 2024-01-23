@@ -4,16 +4,18 @@ from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout, Batc
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.utils.layer_utils import count_params  
 from keras.utils import plot_model
 import wandb
 from utils import build_model
 
 
-def train():
+def train(config=None):
 
-    wandb.init()
-    # Get hyperparameters
-    config = wandb.config
+    if sweep:
+        wandb.init()
+        # Get hyperparameters
+        config = wandb.config
 
     # Define constants
     IMG_WIDTH, IMG_HEIGHT = config['resolution'], config['resolution']
@@ -64,8 +66,9 @@ def train():
     
     model = build_model(config)
     # plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=True)
+    print(model.summary())
 
-    final_learning_rate = 1e-5
+    final_learning_rate = 1e-6
     learning_rate_decay_factor = (final_learning_rate / config['lr'])**(1/config['epochs'])
     steps_per_epoch = int(train_dataset.samples/config['batch_size'])
 
@@ -80,9 +83,9 @@ def train():
     cbacks = [es_cback, checkpoint_cback]
 
     if config['optimizer_type'] == 'adam':
-        optimizer = Adam(learning_rate=lr_schedule, weight_decay=config['l2'])
+        optimizer = Adam(learning_rate=lr_schedule, decay=config['l2'])
     elif config['optimizer_type'] == 'sgd':
-        optimizer = SGD(learning_rate=lr_schedule, momentum=config['momentum'], weight_decay=config['l2'])
+        optimizer = SGD(learning_rate=lr_schedule, momentum=config['momentum'], decay=config['l2'])
 
     auc = tf.keras.metrics.AUC(num_thresholds=200, name='PR-AUC', curve='PR')
 
@@ -106,6 +109,7 @@ def train():
             'val_loss': history.history['val_loss'][epoch],
             'val_accuracy': history.history['val_accuracy'][epoch]
         })
+    wandb.log({'n_params': count_params(model.trainable_weights)})
 
     # Load the trained model
     model.load_weights(MODEL_PATH)
@@ -121,13 +125,14 @@ def train():
 
 sweep = False
 if sweep:
-    sweep_id = "c3-mcv/cnn2/"
+    sweep_id = "c3-mcv/cnn2/vzpf7ujz"
     wandb.agent(sweep_id, train, count=2)
 else:
     config = {
+        'resolution': 256,
         'lr': 1e-3,
         'batch_size': 64,
-        'epochs': 5,
+        'epochs': 3,
         'activation': 'relu',
         'activation2': 'relu',
         'optimizer_type': 'adam',
@@ -136,33 +141,25 @@ else:
         'use_batch_norm': True,
         'l2': 0.001,
         'resolution': 256,
-        'n_conv_blocks': 2,
-        'n_dense_layers': 2,
+        'n_conv_blocks': 4,
+        'n_dense_layers': 1,
         'filters_0': 8,
-        'size_0': 3,
-        'pool_size_0': 2,
-        'filters_1': 16,
-        'size_1': 3,
-        'pool_size_1': 2,
-        'filters_2': 32,
-        'size_2': 3,
-        'pool_size_2': 2,
-        # 'filters_3': 64,
-        # 'size_3': 3,
-        # 'pool_size_3': 2,
-        # 'filters_4': 128,
-        # 'size_4': 3,
-        # 'pool_size_4': 2,
-        # 'filters_5': 256,
-        # 'size_5': 3,
-        # 'pool_size_5': 2,
-        # 'filters_6': 512,
-        # 'size_6': 3,
-        # 'pool_size_6': 2,
+        'filters_1': 8,
+        'size_1': 5,
+        'stride_1': 1,
+        'filters_2': 8,
+        'size_2': 5,
+        'stride_2': 1,
+        'filters_3': 8,
+        'size_3': 5,
+        'stride_3': 3,
+        'filters_4': 64,
+        'size_4': 5,
+        'stride_4': 3,
     }
 
     # Initialize wandb with a sample configuration
     wandb.init(project='cnn2', entity='c3-mcv', config=config)
 
     # Train the model
-    train()
+    train(config)
