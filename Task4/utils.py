@@ -1,5 +1,6 @@
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D, Dense, Dropout, BatchNormalization
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D, Dense, Dropout, BatchNormalization, Concatenate, Input, Activation
+from tensorflow.keras.models import Model
 
 def conv_block(model, filters, kernel_size, stride, activation, use_batch_norm, d, id_layer):
     """
@@ -67,3 +68,56 @@ def build_model(config):
     model.add(Dense(8, activation='softmax'))
 
     return model
+
+def conv_block2(x, squeeze_filters, expand_filters, activation):
+    """
+    Creates a convolution block.
+
+    Args:
+    x: Input tensor.
+    squeeze_filters (int): Number of filters in the squeeze layer.
+    expand_filters (int): Number of filters in the expand layer.
+
+    Returns:
+    x: Output tensor.
+    """
+    # Squeeze layer
+    squeeze = Conv2D(squeeze_filters, (1, 1), padding='same', activation=activation)(x)
+    
+    # Expand layer (with a mix of 1x1 and 3x3 convolutions)
+    expand_1x1 = Conv2D(expand_filters, (1, 1), padding='same', activation=activation)(squeeze)
+    expand_3x3 = Conv2D(expand_filters, (3, 3), padding='same', activation=activation)(squeeze)
+    
+    # Concatenate 1x1 and 3x3 expand outputs
+    x = Concatenate()([expand_1x1, expand_3x3])
+
+    return x
+
+def build_model2(config):
+    """
+
+    Args:
+
+    Returns:
+    model: A Keras model instance.
+    """
+    inputs = Input((config['resolution'], config['resolution'], 3))
+
+    # Initial convolution layer
+    x = Conv2D(config['filters_0'], kernel_size=1, strides=1, padding='same', activation=config['activation'])(inputs)
+    x = MaxPooling2D(pool_size=2)(x)
+
+    for i in range(config['n_conv_blocks']):
+        x = conv_block2(x, squeeze_filters=config[f'filters_{i+1}'], expand_filters=config[f'filters_{i+1}'], activation=config['activation'])
+        x = conv_block2(x, squeeze_filters=config[f'filters_{i+1}'], expand_filters=config[f'filters_{i+1}'], activation=config['activation'])
+        if (i+1) % 2 == 0:
+            x = MaxPooling2D(pool_size=2)(x)
+
+    # Final layers
+    x = Conv2D(8, (1, 1), padding='same', activation=config['activation2'])(x)
+    x = GlobalAveragePooling2D()(x)
+    x = Activation('softmax')(x)
+
+    model = Model(inputs, x)
+    return model
+
