@@ -4,7 +4,7 @@
 The code and data is structured as follows:
 
         .
-        ├── train2.py                  # Source code
+        ├── train2.py                 # Source code
         ├── Pretrain.ipynb            # Pretraining of the model
         └── utils.py                        
 
