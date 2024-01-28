@@ -109,6 +109,15 @@ The best combination of optimized values of the hyperparameters for each combina
 
 ## Task4 work
 
+The main objective of this lab was to design a CNN and train it from scrach. To evaluate the model, its size and accuracy is taken into account with a ratio. Moreover, the aim was to put everything learned togheter, control the pipeline and make decisions about it.
+The final model employs a squeeze-expand architecture.
 
+The following table sumarized the results:
 
-(State shortly what you did during each week. Just a table with the main results is enough. Remind to upload a brief presentation (pptx?) at virtual campus. Do not modify the previous weeks code. If you want to reuse it, just copy it on the corespondig week folder.)
+| MODEL                             | ACCURACY | AVERAGE F1 | AVERAGE PRECISION | AVERAGE RECALL |
+|:----------------------------------|:---------|:-----------|:-------------------|:---------------|
+| Baseline model                    | 0.372    | 0.375      | 0.370              | 0.380          |
+| Model pretrained on CIFAR 10       | 0.782    | 0.783      | 0.787              | 0.779          |
+| Model using data augmentation     | 0.419    | 0.410      | 0.396              | 0.425          |
+| Model not using data augmentation | 0.149    | 0.031      | 0.018              | 0.125          |
+
